@@ -4,6 +4,26 @@ WallyAPI é um framework minimalista para APIs RESTful em PHP, com foco em simpl
 
 ---
 
+## Instalação
+
+### NPX 
+
+```shell 
+npx create-wallyapi project-name
+- instruções no console...
+```
+
+### Git Clone 
+
+```shell
+git clone https://github.com/luizservelo/wallyapi project-name
+cd project-name 
+docker compose -f 'docker-compose.yml' up -d --build 
+cd www && composer install
+```
+
+---
+
 ## Estrutura do Projeto
 
 ```
@@ -248,30 +268,5 @@ public function delete($data, $middlewareData, $injectedData) {
 - **$data**: Sempre contém tudo da requisição, inclusive arquivos.
 
 ---
-
-## Instruções para Rodar 
-
-## Instalar com NPX 
-```shell 
-npx create-wallyapi project-name
-- instruções no console...
-```
-
-## Instalar com Git Clone 
-
-```shell
-git clone https://github.com/luizservelo/wallyapi project-name
-cd project-name 
-docker compose -f 'docker-compose.yml' up -d --build 
-cd www && composer install
-```
-
-### Localhost 
-
-```shell 
-cd project-name 
-docker compose -f 'docker-compose.yml' up -d --build 
-cd www && composer install
-```
 
 WallyAPI: Simples, direto e eficiente para APIs RESTful em PHP.
