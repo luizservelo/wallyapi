@@ -249,4 +249,29 @@ public function delete($data, $middlewareData, $injectedData) {
 
 ---
 
+## Instruções para Rodar 
+
+## Instalar com NPX 
+```shell 
+npx create-wallyapi project-name
+- instruções no console...
+```
+
+## Instalar com Git Clone 
+
+```shell
+git clone https://github.com/luizservelo/wallyapi project-name
+cd project-name 
+docker compose -f 'docker-compose.yml' up -d --build 
+cd www && composer install
+```
+
+### Localhost 
+
+```shell 
+cd project-name 
+docker compose -f 'docker-compose.yml' up -d --build 
+cd www && composer install
+```
+
 WallyAPI: Simples, direto e eficiente para APIs RESTful em PHP.
