@@ -24,6 +24,47 @@ cd www && composer install
 
 ---
 
+## Ambiente de Desenvolvimento com Docker
+
+O WallyAPI já vem com os arquivos Docker prontos para facilitar o desenvolvimento, incluindo banco de dados MariaDB e PHPMyAdmin.
+
+### Serviços Disponíveis
+
+- **API (PHP + Apache):** http://localhost
+- **PHPMyAdmin:** http://localhost:4100
+
+### Credenciais do Banco de Dados
+
+- **Host:** db
+- **Database:** database
+- **Usuário:** root
+- **Senha:** root
+
+Essas credenciais já estão configuradas no arquivo `www/config/database.php`:
+
+```php
+return [
+    'driver' => 'mysql',
+    'host' => 'db',
+    'database' => 'database',
+    'username' => 'root',
+    'password' => 'root',
+    // ...
+];
+```
+
+### Acesso ao PHPMyAdmin
+
+- **URL:** http://localhost:4100
+- **Login:** root
+- **Senha:** root
+
+### Como a API se conecta ao banco
+
+A aplicação PHP já está configurada para se conectar ao banco MariaDB usando as credenciais acima. O host do banco é `db` (nome do serviço Docker), e não `localhost`, pois ambos os containers estão na mesma rede interna do Docker.
+
+---
+
 ## Estrutura do Projeto
 
 ```
