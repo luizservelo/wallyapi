@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Models;
+
+use App\Core\Model;
+
+class {{name}} extends Model {
+    public function __construct()
+    {
+        parent::__construct(
+            'table_name',
+            [
+                // Adicione aqui os campos que podem ser preenchidos em massa
+            ],
+            'primary_key',
+            true // Chave primária é UUID (true)
+        );
+    }
+} 

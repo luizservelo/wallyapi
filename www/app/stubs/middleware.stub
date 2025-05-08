@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Middleware;
+
+class {{name}}Middleware {
+    public function handle() {
+        // Implemente sua lógica aqui
+        
+        // Retorne null se não quiser passar dados para o controller
+        // ou retorne um array com os dados que deseja passar
+        return null;
+    }
+} 

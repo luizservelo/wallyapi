@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Core\Controller;
+
+class {{name}}Controller extends Controller {
+    public function index($data, $middlewareData) {
+        return $this->response([
+            'message' => 'Hello world'
+        ]);
+    }
+} 

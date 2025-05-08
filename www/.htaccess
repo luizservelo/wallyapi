@@ -1,0 +1,19 @@
+RewriteEngine On
+
+# Se o arquivo/diretório não existir, redireciona para o index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Protege o diretório
+Options -Indexes
+
+# Configurações de segurança
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+# Passa o header Authorization para o PHP
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1 
