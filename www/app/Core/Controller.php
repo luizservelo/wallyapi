@@ -21,14 +21,11 @@ class Controller
         exit;
     }
 
-    protected function error($message, $statusCode = 400, $data = [])
+    protected function error($data = [], $statusCode = 400)
     {
         http_response_code($statusCode);
         header('Content-Type: application/json');
-        echo json_encode(array_merge([
-            'status' => 'error',
-            'message' => $message
-        ], $data), JSON_PRETTY_PRINT);
+        echo json_encode(array_merge(['status' => 'error'], $data), JSON_PRETTY_PRINT);
         exit;
     }
 
