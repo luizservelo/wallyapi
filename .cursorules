@@ -1,0 +1,279 @@
+# WallyAPI - Cursor AI Rules
+
+## Contexto do Projeto
+Este é o WallyAPI, um framework PHP minimalista para APIs RESTful.
+Stack: PHP 8.2, Apache, MariaDB, Docker, Composer.
+Arquitetura: MVC sem View, Active Record Pattern, Singleton para DB.
+
+## Documentação de Referência
+Sempre consulte primeiro:
+- AI_PROJECT_GUIDE.md - Documentação completa e detalhada
+- AI_QUICK_REFERENCE.md - Referência rápida para tarefas comuns
+- README.md - Documentação do usuário final
+
+## Estrutura de Diretórios
+www/
+├── app/
+│   ├── Controllers/   → Lógica de negócio (extends App\Core\Controller)
+│   ├── Core/          → Framework base (NÃO modificar sem necessidade)
+│   ├── Middleware/    → Validações e autenticação
+│   ├── Models/        → Active Record (extends App\Core\Model)
+│   └── stubs/         → Templates para CLI
+├── config/            → Configurações (database.php)
+├── routes/            → Definição de rotas (api.php)
+└── index.php          → Entry point
+
+## Convenções de Código
+
+### Nomenclatura
+- Controllers: PascalCase + "Controller" (ex: UserController)
+- Models: PascalCase singular (ex: User) → Tabela: snake_case plural (ex: users)
+- Middlewares: PascalCase + "Middleware" (ex: AuthMiddleware)
+- Métodos: camelCase (ex: findById, createUser)
+
+### Namespaces OBRIGATÓRIOS
+- Controllers: namespace App\Controllers;
+- Models: namespace App\Models;
+- Middlewares: namespace App\Middleware;
+- Core: namespace App\Core;
+
+### Assinaturas de Métodos
+
+**Controller:**
+```php
+public function methodName($data, $middlewareData, $injectedData = [])
+{
+    // $data: todos os dados da requisição (POST, GET, JSON, FILES, route params)
+    // $middlewareData: dados retornados pelos middlewares
+    // $injectedData: dados definidos na rota
+    
+    // SEMPRE retornar $this->response() ou $this->error()
+    return $this->response(['key' => 'value'], 200);
+}
+```
+
+**Middleware:**
+```php
+public function handle($data, $injectData)
+{
+    // Retornar array para passar dados ao controller
+    // OU retornar null se não precisar passar dados
+    // OU bloquear com http_response_code() + echo json_encode() + exit
+    return ['user' => $userData];
+}
+```
+
+**Model:**
+```php
+public function __construct()
+{
+    parent::__construct(
+        'table_name',           // Nome da tabela
+        ['field1', 'field2'],   // Campos obrigatórios
+        'primary_key',          // Nome da PK (padrão: 'id')
+        false                   // true se UUID, false se auto-increment
+    );
+}
+```
+
+## Padrões de Implementação
+
+### Criar Novo Recurso
+1. Criar tabela SQL no banco (via PHPMyAdmin ou SQL file)
+2. Gerar Model: `php make.php model NomeModel`
+3. Editar Model (configurar tabela, campos, PK)
+4. Gerar Controller: `php make.php controller NomeController`
+5. Implementar métodos CRUD no Controller
+6. Adicionar rotas em routes/api.php
+7. Testar endpoints
+
+### Controller CRUD Padrão
+Sempre implementar nesta ordem:
+- index($data, $middlewareData) → GET /resource
+- show($data, $middlewareData) → GET /resource/{id}
+- create($data, $middlewareData) → POST /resource
+- update($data, $middlewareData) → PUT /resource/{id}
+- delete($data, $middlewareData) → DELETE /resource/{id}
+
+### Validação
+SEMPRE validar inputs no controller ANTES de processar:
+```php
+if (empty($data['field'])) {
+    return $this->error(['message' => 'Field is required'], 422);
+}
+```
+
+### Segurança
+- NUNCA retornar senhas em responses
+- SEMPRE usar Password::hash() para senhas
+- SEMPRE usar JWT::verify() em rotas protegidas
+- SEMPRE validar e sanitizar inputs
+- SEMPRE usar prepared statements (já feito pelo Model)
+
+### Tratamento de Erros
+```php
+if (!$model->save()) {
+    return $this->error([
+        'message' => 'Failed to save',
+        'error' => $model->fail()->getMessage()
+    ], 500);
+}
+```
+
+## Status Codes HTTP Corretos
+- 200: Sucesso (GET, PUT, DELETE)
+- 201: Criado (POST)
+- 400: Bad Request (erro genérico)
+- 401: Unauthorized (não autenticado)
+- 403: Forbidden (sem permissão)
+- 404: Not Found
+- 422: Unprocessable Entity (validação falhou)
+- 500: Internal Server Error
+
+## Model - Queries Comuns
+
+**Buscar um:**
+```php
+$user = (new User)->findById(1);
+$user = (new User)->find('email = :email', 'email=john@example.com')->fetch();
+```
+
+**Buscar múltiplos:**
+```php
+$users = (new User)->find()->order('created_at DESC')->limit(10)->fetch(true);
+```
+
+**Criar:**
+```php
+$user = new User;
+$user->field = 'value';
+$user->save();
+```
+
+**Atualizar:**
+```php
+$user = (new User)->findById(1);
+$user->field = 'new value';
+$user->save();
+```
+
+**Deletar:**
+```php
+$user = (new User)->findById(1);
+$user->destroy();
+```
+
+## Rotas
+
+**Sintaxe:**
+```php
+$router->METHOD('/path/{param}', 'Controller@method', ['Middleware@handle'], ['injected' => 'data']);
+```
+
+**Padrões de rota:**
+- Públicas: sem middlewares
+- Protegidas: com AuthMiddleware@handle
+- Admin: com AuthMiddleware@handle + AdminMiddleware@check
+
+## Autenticação
+
+**Login:**
+```php
+$token = JWT::generate(['user_id' => $user->id], 60 * 60 * 24 * 30); // 30 dias
+```
+
+**Middleware de Auth:**
+```php
+$token = str_replace('Bearer ', '', $headers['Authorization']);
+$payload = JWT::verify($token);
+$user = (new User)->findById($payload['user_id']);
+return ['user' => $user->data];
+```
+
+**No Controller protegido:**
+```php
+$authUser = $middlewareData['user']; // Dados do AuthMiddleware
+```
+
+## Arquivos Core - NÃO Modificar
+- app/Core/Connect.php
+- app/Core/Controller.php
+- app/Core/Router.php
+- app/Core/Model.php
+- app/Core/JWT.php
+- app/Core/Password.php
+- app/Core/CORS.php
+
+Se precisar modificar, consultar o usuário primeiro.
+
+## CLI Disponível
+```bash
+php make.php controller NomeController
+php make.php model NomeModel
+php make.php middleware NomeMiddleware
+```
+
+## Docker
+```bash
+docker compose up -d              # Iniciar
+docker compose down               # Parar
+docker compose logs -f web        # Logs
+docker compose exec web bash      # Terminal no container
+```
+
+## Banco de Dados
+- Host: db (dentro do Docker)
+- Database: database
+- User/Pass: root/root
+- PHPMyAdmin: http://localhost:4100
+
+## Response Format
+SEMPRE usar este formato:
+
+**Sucesso:**
+```json
+{
+    "status": "success",
+    "message": "...",
+    "data": {...}
+}
+```
+
+**Erro:**
+```json
+{
+    "status": "error",
+    "message": "...",
+    "errors": {...}
+}
+```
+
+## Comentários e Documentação
+- Adicionar PHPDoc em todos os métodos públicos
+- Comentar lógica complexa
+- Não comentar código óbvio
+- Manter comentários em português (se solicitado pelo usuário)
+
+## Ao Sugerir Código
+1. Verificar se segue as convenções acima
+2. Incluir validações necessárias
+3. Incluir tratamento de erros
+4. Usar status codes HTTP corretos
+5. Seguir padrões de nomenclatura
+6. Adicionar comentários quando necessário
+
+## Lembre-se Sempre
+- $data contém TUDO (POST, GET, JSON, FILES, route params)
+- Controllers SEMPRE retornam $this->response() ou $this->error()
+- Middlewares retornam array, null ou bloqueiam com exit
+- Models usam Active Record pattern
+- Senhas SEMPRE com Password::hash()
+- Rotas protegidas SEMPRE com AuthMiddleware@handle
+- Validar ANTES de processar
+- Nunca expor dados sensíveis
+
+## Debugging
+- Logs: docker compose logs -f web
+- Erros: ErrorHandler captura tudo e retorna JSON
+- DB: Acessar via PHPMyAdmin ou docker compose exec db mysql -u root -p
+

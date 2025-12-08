@@ -4,6 +4,24 @@ WallyAPI é um framework minimalista para APIs RESTful em PHP, com foco em simpl
 
 ---
 
+## 📚 Documentação
+
+### 📖 Índice Completo
+- **DOCUMENTATION_INDEX.md** - Índice completo de toda a documentação (comece aqui!)
+
+### Para Desenvolvedores
+- **README.md** - Este arquivo, com visão geral e guia de uso
+
+### Para Assistentes de IA
+- **AI_PROJECT_GUIDE.md** - Guia estrutural completo e detalhado do projeto
+- **AI_QUICK_REFERENCE.md** - Referência rápida com templates e exemplos comuns
+- **AI_FLOW_EXAMPLES.md** - Exemplos visuais de fluxo de dados através do sistema
+- **.cursorules** - Regras e convenções para o Cursor AI
+
+Estes arquivos foram criados para que assistentes de IA (como Cursor, GitHub Copilot, etc.) tenham total domínio da arquitetura, padrões e convenções do WallyAPI, permitindo desenvolvimento mais rápido e consistente.
+
+---
+
 ## Instalação
 
 ### NPX 
